@@ -36,6 +36,20 @@ dist/
 
 Publish the contents of `dist/` with any static web host. The site does not require a backend. Fonts load from Google Fonts; calculator inputs are processed locally in the browser.
 
+### Vercel
+
+Import this repository with the repository root as the **Root Directory** (leave it at the default; do not select `dist`). The included `vercel.json` selects **Other** as the framework, skips the build step, and publishes `dist/`.
+
+If configuring the settings manually:
+
+- Framework Preset: **Other**
+- Root Directory: repository root (default)
+- Build Command: override enabled, empty
+- Output Directory: **dist**
+
+After changing these settings, deploy the latest `main` commit. Deploying the repository root as the output instead of `dist/` can cause a 404 at `/`, because the homepage is at `dist/index.html`.
+
+
 ## Data maintenance
 
 Benefit content was reviewed on October 15, 2026. Rate data and eligibility summaries are maintained manually. The 2027 dollar amounts are estimates until an official VA rate table is verified. Payment dates are calculated from the payment rule and federal holidays; bank availability can differ.
