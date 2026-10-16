@@ -63,6 +63,8 @@ The canonical production origin is `https://veteranpayguide.com`. Vercel project
 
 The published HTML includes self-referencing canonicals, an XML sitemap, crawlable internal links, and rate/calendar tables that can be read without JavaScript. Guides cover 2027 rates, payment dates, other benefits, About/sources/corrections, and privacy. Ahrefs analytics is preserved on every page.
 
+Each page also includes its own Open Graph and X card title, description, and canonical sharing URL. The shared `dist/social-preview.png` is a 1200 × 630 PNG using the website's branding. `scripts/build-content.cjs` refreshes these tags for the homepage and every generated page, without duplicating tags or inheriting the homepage's sharing URL on guides. Keep the preview image publicly accessible when deploying.
+
 After reviewing data or changing guide copy, run:
 
 ```sh

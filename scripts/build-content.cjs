@@ -16,6 +16,32 @@ const dollars = n => new Intl.NumberFormat('en-US', { style: 'currency', currenc
 const date = d => new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(d);
 const month = (y, m) => new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m, 1)));
 const esc = s => String(s).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+const decode = s => s.replace(/&(amp|quot|apos|lt|gt);|&#39;/g, entity => ({ '&amp;': '&', '&quot;': '"', '&apos;': "'", '&lt;': '<', '&gt;': '>', '&#39;': "'" })[entity]);
+function socialHead(head, title, description, url) {
+  // Remove inherited cards before adding page-specific values. Rebuilding is safe.
+  const clean = head.replace(/<meta\b[^>]*(?:property|name)=["'](?:og:|twitter:)[^"']*["'][^>]*>\s*/gi, '').trimEnd();
+  const image = `${origin}/social-preview.png`;
+  const imageAlt = 'Veteran Pay Guide: disability pay calculator, rate estimates and payment dates. Independent educational resource.';
+  const tags = [
+    ['property', 'og:type', 'website'],
+    ['property', 'og:site_name', 'Veteran Pay Guide'],
+    ['property', 'og:locale', 'en_US'],
+    ['property', 'og:title', title],
+    ['property', 'og:description', description],
+    ['property', 'og:url', url],
+    ['property', 'og:image', image],
+    ['property', 'og:image:type', 'image/png'],
+    ['property', 'og:image:width', '1200'],
+    ['property', 'og:image:height', '630'],
+    ['property', 'og:image:alt', imageAlt],
+    ['name', 'twitter:card', 'summary_large_image'],
+    ['name', 'twitter:title', title],
+    ['name', 'twitter:description', description],
+    ['name', 'twitter:image', image],
+    ['name', 'twitter:image:alt', imageAlt],
+  ];
+  return clean + '\n' + tags.map(([attribute, key, value]) => `<meta ${attribute}="${key}" content="${esc(value)}">`).join('\n') + '\n';
+}
 const external = (url, label) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`;
 const review = `<p class="review-line">Source review: <time datetime="${reviewed}">${reviewLabel}</time> · <a href="/about/#editorial-policy">How we review content</a></p>`;
 const footerLinks = `<nav class="footer-links" aria-label="Website information"><a href="/2027-va-disability-rates/">2027 rates</a><a href="/va-disability-payment-dates/">Payment dates</a><a href="/veteran-benefits/">Other benefits</a><a href="/about/">About &amp; sources</a><a href="/privacy/">Privacy</a><a href="${issues}" target="_blank" rel="noopener noreferrer">Report an issue ↗</a></nav>`;
@@ -54,6 +80,11 @@ home = home.replace(/<div class="rating-buttons" role="group" aria-labelledby="r
 home = home.replace(/<div class="payment-details">(?:<p class="small-note"><a href="\/va-disability-payment-dates\/">Full payment date guide →<\/a><\/p>)?/,  '<div class="payment-details"><p class="small-note"><a href="/va-disability-payment-dates/">Full payment date guide →</a></p>');
 home = home.replace(/<div class="support-banner-copy"><h2>/, '<div class="support-banner-copy"><h2>');
 home = home.replace(/<p class="support-source-note">[\s\S]*?<\/p>/, '<p class="support-source-note">Official VA and SSA sources · Reviewed October 15, 2026 · <a href="/veteran-benefits/">Read the full benefits guide →</a></p>');
+home = home.replace(/<head>([\s\S]*?)<\/head>/, (_, head) => {
+  const title = decode(head.match(/<title>([\s\S]*?)<\/title>/)[1]);
+  const description = decode(head.match(/<meta name="description" content="([^"]*)"/)[1]);
+  return `<head>${socialHead(head, title, description, `${origin}/`)}</head>`;
+});
 fs.writeFileSync(path.join(dist, 'index.html'), home);
 
 const head = home.match(/<head>([\s\S]*?)<\/head>/)[1];
@@ -61,9 +92,9 @@ const brand = home.match(/<a class="brand"[\s\S]*?<\/a>/)[0].replace('href="/"',
 const pages = [];
 function page(slug, title, description, h1, intro, body) {
   const url = `${origin}/${slug}/`;
-  const pageHead = head.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(title)} | Veteran Pay Guide</title>`)
+  const pageHead = socialHead(head.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(title)} | Veteran Pay Guide</title>`)
     .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(description)}">`)
-    .replace(/<link rel="canonical"[^>]*>/, `<link rel="canonical" href="${url}">`);
+    .replace(/<link rel="canonical"[^>]*>/, `<link rel="canonical" href="${url}">`), `${title} | Veteran Pay Guide`, description, url);
   const html = `<!doctype html><html lang="en"><head>${pageHead}</head><body><a class="skip" href="#main">Skip to content</a><div class="independent"><div class="wrap">An independent guide for Veterans and their families. <span>Not affiliated with the U.S. Department of Veterans Affairs.</span></div></div><header><div class="wrap nav">${brand}<nav aria-label="Main navigation"><a href="/#calculator">Pay calculator</a><a href="/2027-va-disability-rates/">2027 rates</a><a href="/va-disability-payment-dates/">Payment dates</a><a href="/veteran-benefits/">Other benefits</a></nav></div></header><main id="main" class="wrap guide-page"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span>${esc(h1.replaceAll('&amp;', '&'))}</span></nav><article><div class="guide-hero"><div class="eyebrow">VETERAN PAY GUIDE</div><h1>${h1}</h1><p class="guide-intro">${intro}</p>${review}</div>${body}</article><aside class="guide-related" aria-label="Related guides"><h2>Keep exploring.</h2>${guides}</aside></main><footer><div class="wrap footer-top"><a class="brand" href="/">Veteran Pay Guide<span class="footer-dot">.</span></a><a href="/#calculator">Go to calculator →</a></div><div class="wrap footer-bottom"><p>Independent educational resource. Not affiliated with or endorsed by VA, SSA, or the U.S. government. Confirm your individual award with VA.</p>${footerLinks}<span>© 2026 Veteran Pay Guide</span></div></footer></body></html>`;
   fs.mkdirSync(path.join(dist, slug), { recursive: true });
   fs.writeFileSync(path.join(dist, slug, 'index.html'), html);
