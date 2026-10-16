@@ -57,3 +57,20 @@ Benefit content was reviewed on October 15, 2026. Rate data and eligibility summ
 Official sources are linked next to the relevant information. Special Monthly Compensation, TDIU, offsets, and individual award adjustments are not included in the regular compensation calculator.
 
 This is an independent educational resource, not affiliated with or endorsed by VA, SSA, or the U.S. government.
+## SEO and content pages
+
+The canonical production origin is `https://veteranpayguide.com`. `vercel.json` permanently redirects the `www` and production `vapayguide.vercel.app` hosts to that origin, and removes explicit `index.html` URLs. It leaves deployment preview hosts alone.
+
+The published HTML includes self-referencing canonicals, an XML sitemap, crawlable internal links, and rate/calendar tables that can be read without JavaScript. Guides cover 2027 rates, payment dates, other benefits, About/sources/corrections, and privacy. Ahrefs analytics is preserved on every page.
+
+After reviewing data or changing guide copy, run:
+
+```sh
+node scripts/build-content.cjs
+```
+
+This reads the calculator data from `dist/app.js`, refreshes generated homepage blocks, and writes the five guide/information pages, `robots.txt`, and `sitemap.xml`. The checked-in output can still be hosted without a build step. Update the explicit source-review dates only after actually checking those sources. Do not mark estimated 2027 amounts as official until an official VA table has been verified.
+
+The guide text lives in `scripts/build-content.cjs`; homepage layout lives in `dist/index.html`. Program cards in the homepage are reused in the full benefits guide. Calculator values and generated rate tables must stay consistent. Update the static next-payment fallback at a substantive review; the interactive next-payment row refreshes using the U.S. Eastern date.
+
+Corrections go to the repository's public GitHub Issues tracker. Never ask visitors to include benefit records or other sensitive information in a public issue.
