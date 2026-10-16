@@ -6,28 +6,6 @@
   "trailingSlash": true,
   "redirects": [
     {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.veteranpayguide.com"
-        }
-      ],
-      "destination": "https://veteranpayguide.com/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "vapayguide.vercel.app"
-        }
-      ],
-      "destination": "https://veteranpayguide.com/:path*",
-      "permanent": true
-    },
-    {
       "source": "/index.html",
       "destination": "/",
       "permanent": true

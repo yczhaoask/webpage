@@ -59,7 +59,7 @@ Official sources are linked next to the relevant information. Special Monthly Co
 This is an independent educational resource, not affiliated with or endorsed by VA, SSA, or the U.S. government.
 ## SEO and content pages
 
-The canonical production origin is `https://veteranpayguide.com`. `vercel.json` permanently redirects the `www` and production `vapayguide.vercel.app` hosts to that origin, and removes explicit `index.html` URLs. It leaves deployment preview hosts alone.
+The canonical production origin is `https://veteranpayguide.com`. Vercel project-domain settings permanently redirect `www.veteranpayguide.com` and the production `vapayguide.vercel.app` hostname to that origin with status 308. These are hosting settings, not DNS changes; preserve them when managing domains. `vercel.json` removes explicit `index.html` URLs and normalizes directory URLs with trailing slashes. Deployment preview hosts are unchanged.
 
 The published HTML includes self-referencing canonicals, an XML sitemap, crawlable internal links, and rate/calendar tables that can be read without JavaScript. Guides cover 2027 rates, payment dates, other benefits, About/sources/corrections, and privacy. Ahrefs analytics is preserved on every page.
 
