@@ -76,3 +76,11 @@ This reads the calculator data from `dist/app.js`, refreshes generated homepage 
 The guide text lives in `scripts/build-content.cjs`; homepage layout lives in `dist/index.html`. Program cards in the homepage are reused in the full benefits guide. Calculator values and generated rate tables must stay consistent. Update the static next-payment fallback at a substantive review; the interactive next-payment row refreshes using the U.S. Eastern date.
 
 Corrections go to the repository's public GitHub Issues tracker. Never ask visitors to include benefit records or other sensitive information in a public issue.
+
+## Traffic attribution and usage events
+
+Ready-to-copy UTM links and reporting instructions are in [docs/sharing-links.md](docs/sharing-links.md). Use them for external shares, never internal navigation. Canonicals and Open Graph URLs stay clean.
+
+`dist/app.js` sends only `calculator_used` and `payment_calendar_downloaded` through the existing Ahrefs SDK, each at most once per page load. The initial calculation does not count. No selections, household information, amounts, or event properties are transmitted. Register these exact custom event names in the canonical project's Web Analytics → Tracked events. The privacy notice describes the generic events. See the sharing guide for limitations.
+
+Run regression checks with `node --test tests/growth.test.cjs`, then regenerate with `node scripts/build-content.cjs`. The payment date guide includes benefit-month calendars for both 2026 and 2027; it shares the calculator's date rules. Changing year coverage must preserve the benefit-month/payment-date distinction.
